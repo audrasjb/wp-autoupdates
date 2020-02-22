@@ -63,7 +63,7 @@ function wp_autoupdates_is_plugins_auto_update_enabled() {
 	/**
 	 * Filters whether plugins manual autoupdate is enabled.
 	 *
-	 * @param bool $enabled True if plugins auto udpate is enabled, false otherwise.
+	 * @param bool $enabled True if plugins auto update is enabled, false otherwise.
 	 */
 	return apply_filters( 'wp_plugins_auto_update_enabled', $enabled );
 }

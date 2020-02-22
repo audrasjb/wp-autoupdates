@@ -37,8 +37,8 @@ function wp_auto_updates_styles_scripts( $hook ) {
 			$slug = $theme->get_stylesheet();
 			if ( ! current_user_can( 'update_themes' ) ) {
 				wp_die(
-					'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
-					'<p>' . __( 'Sorry, you are not allowed to enable automatic update for themes.' ) . '</p>',
+					'<h1>' . __( 'You need a higher level of permission.', 'wp-autoupdates' ) . '</h1>' .
+					'<p>' . __( 'Sorry, you are not allowed to enable automatic update for themes.', 'wp-autoupdates' ) . '</p>',
 					403
 				);
 			}
@@ -90,7 +90,7 @@ function wp_is_themes_auto_update_enabled() {
 	/**
 	 * Filters whether themes manual autoupdate is enabled.
 	 *
-	 * @param bool $enabled True if themes auto udpate is enabled, false otherwise.
+	 * @param bool $enabled True if themes auto update is enabled, false otherwise.
 	 */
 	return apply_filters( 'wp_themes_auto_update_enabled', $enabled );
 }
@@ -132,7 +132,7 @@ function wp_autoupdates_themes_notices() {
 	// Themes screen
 	if ( isset( $_GET['autoupdated'] ) ) {
 		$autoupdated_themes = get_option( 'wp_autoupdated_themes', array() );
-		$autoupdate_notice  = __( 'The selected theme won’t update automatically anymore.' );
+		$autoupdate_notice  = __( 'The selected theme won’t update automatically anymore.', 'wp-autoupdates' );
 		if ( 'enable' === $_GET['autoupdated'] ) {
 			echo '<div id="message" class="updated notice is-dismissible"><p>';
 			_e( 'The selected theme will now update automatically.', 'wp-autoupdates' );
