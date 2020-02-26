@@ -243,6 +243,9 @@ function wp_autoupdates_plugins_bulk_actions_handle( $redirect_to, $doaction, $i
 			return $redirect_to;
 		}
 
+		// Filter can be used to remove plugins from being enabled via bulk action.
+		$plugins = apply_filters( 'wp_plugin_bulk_enabled_autoupdate', $plugins );
+
 		$previous_autoupdated_plugins = get_site_option( 'wp_auto_update_plugins', array() );
 
 		$new_autoupdated_plugins = array_merge( $previous_autoupdated_plugins, $plugins );
@@ -271,6 +274,9 @@ function wp_autoupdates_plugins_bulk_actions_handle( $redirect_to, $doaction, $i
 			$redirect_to = self_admin_url( "plugins.php?plugin_status=$status&paged=$page&s=$s" );
 			return $redirect_to;
 		}
+
+		// Filter can be used to remove plugins from being disabled via bulk action.
+		$plugins = apply_filters( 'wp_plugin_bulk_disabled_autoupdate', $plugins );
 
 		$previous_autoupdated_plugins = get_site_option( 'wp_auto_update_plugins', array() );
 
