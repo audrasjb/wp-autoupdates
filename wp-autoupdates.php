@@ -9,7 +9,7 @@ Requires PHP: 7.2
 Tested up to: 5.3
 Author: The WordPress Team
 Author URI: https://wordpress.org
-Contributors: wordpressdotorg, audrasjb, whodunitagency, desrosj, xkon, karmatosed
+Contributors: wordpressdotorg, audrasjb, whodunitagency, desrosj, xkon, karmatosed, sebd86
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: wp-autoupdates
@@ -109,7 +109,7 @@ function wp_autoupdates_add_plugins_autoupdates_column_content( $column_name, $p
 	$plugins = get_plugins();
 	$plugins_updates = get_site_transient( 'update_plugins' );
 	$page = isset( $_GET['paged'] ) && ! empty( $_GET['paged'] ) ? wp_unslash( esc_html( $_GET['paged'] ) ) : '';
-	if ( wp_autoupdates_is_plugins_auto_update_enabled() ) {
+	if ( wp_autoupdates_is_plugins_auto_update_enabled() && wp_autoupdates_plugin_allows_auto_update( $plugin_file ) ) {
 		$wp_auto_update_plugins = get_site_option( 'wp_auto_update_plugins', array() );
 		if ( in_array( $plugin_file, $wp_auto_update_plugins, true ) ) {
 			$aria_label = esc_attr(
@@ -293,15 +293,24 @@ add_action( 'handle_bulk_actions-plugins', 'wp_autoupdates_plugins_bulk_actions_
 function wp_autoupdates_notices() {
 	// Plugins screen
 	if ( isset( $_GET['enable-autoupdate'] ) ) {
-		echo '<div id="message" class="notice notice-success is-dismissible"><p>';
+		echo '<div id="message" class="updated notice is-dismissible"><p>';
 		_e( 'The selected plugins will now update automatically.', 'wp-autoupdates' );
 		echo '</p></div>';
 	}
 	if ( isset( $_GET['disable-autoupdate'] ) ) {
-		echo '<div id="message" class="notice notice-success is-dismissible"><p>';
+		echo '<div id="message" class="updated notice is-dismissible"><p>';
 		_e( 'The selected plugins won’t automatically update anymore.', 'wp-autoupdates' );
 		echo '</p></div>';
 	}
 }
 add_action( 'admin_notices', 'wp_autoupdates_notices' );
 
+/**
+ * Allows a plugin to decide if auto updates is an option for user to enable.
+ *
+ * @param  string $plugin_file
+ * @return bool   Returns true or false if auto-updates are allowed.
+ */
+function wp_autoupdates_plugin_allows_auto_update( $plugin_file ) {
+	return apply_filters( 'wp_plugin_allows_auto_update', true, $plugin_file );
+}
