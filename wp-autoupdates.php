@@ -320,12 +320,19 @@ function wp_autoupdates_plugins_status_links( $status_links ) {
 		return $status_links;
 	}
 
-	$enabled_count = count( get_site_option( 'wp_auto_update_plugins', array() ) );
-
+	$plugins = get_plugins();
+	$enabled_count = 0;
+	$wp_auto_update_plugins = get_site_option( 'wp_auto_update_plugins', array() );
+	foreach ( $wp_auto_update_plugins as $wp_auto_update_plugin ) {
+		if ( isset( $plugins[ $wp_auto_update_plugin ] ) ) {
+			$enabled_count++;
+		}
+	}
+	
 	// when merged, these counts will need to be set in WP_Plugins_List_Table::prepare_items().
 	$counts = array(
-		'autoupdate_enabled'  => $enabled_count,
-		'autoupdate_disabled' => $totals['all'] - $enabled_count,
+		'auto-update-enabled'  => $enabled_count,
+		'auto-update-disabled' => $totals['all'] - $enabled_count,
 	);
 
 	// we can't use the global $status set in WP_Plugin_List_Table::__construct() because
@@ -334,7 +341,7 @@ function wp_autoupdates_plugins_status_links( $status_links ) {
 
 	foreach ( $counts as $type => $count ) {
 		switch( $type ) {
-			case 'autoupdate_enabled':
+			case 'auto-update-enabled':
 				/* translators: %s: Number of plugins. */
 				$text = _n(
 					'Automatic Update Enabled <span class="count">(%s)</span>',
@@ -344,7 +351,7 @@ function wp_autoupdates_plugins_status_links( $status_links ) {
 				);
 
 				break;
-			case 'autoupdate_disabled':
+			case 'auto-update-disabled':
 				/* translators: %s: Number of plugins. */
 				$text = _n(
 					'Automatic Update Disabled <span class="count">(%s)</span>',
@@ -397,18 +404,18 @@ function wp_autoupdates_plugins_filter_plugins_by_status( $plugins ) {
 		return;
 	}
 
-	$wp_auto_update_plguins = get_site_option( 'wp_auto_update_plugins', array() );
+	$wp_auto_update_plugins = get_site_option( 'wp_auto_update_plugins', array() );
 	$_plugins = array();
 	foreach ( $plugins as $plugin_file => $plugin_data ) {
 		switch ( $_REQUEST['plugin_status'] ) {
 			case 'auto-update-enabled':
-				if ( in_array( $plugin_file, $wp_auto_update_plguins ) ) {
+				if ( in_array( $plugin_file, $wp_auto_update_plugins ) ) {
 					$_plugins[ $plugin_file ] = _get_plugin_data_markup_translate( $plugin_file, $plugin_data, false, true );
 				}
 
 				break;
 			case 'auto-update-disabled':
-				if ( ! in_array( $plugin_file, $wp_auto_update_plguins ) ) {
+				if ( ! in_array( $plugin_file, $wp_auto_update_plugins ) ) {
 					$_plugins[ $plugin_file ] = _get_plugin_data_markup_translate( $plugin_file, $plugin_data, false, true );
 				}
 
