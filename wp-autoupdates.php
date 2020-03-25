@@ -234,18 +234,23 @@ function wp_autoupdates_add_plugins_autoupdates_column_content( $column_name, $p
 	if ( ! current_user_can( 'update_plugins' ) || ! wp_autoupdates_is_plugins_auto_update_enabled() ) {
 		return;
 	}
+
 	if ( 'autoupdates_column' !== $column_name ) {
 		return;
 	}
+
 	$plugins = get_plugins();
 	$plugins_updates = get_site_transient( 'update_plugins' );
 	$page = isset( $_GET['paged'] ) && ! empty( $_GET['paged'] ) ? wp_unslash( esc_html( $_GET['paged'] ) ) : '';
 	$plugin_status = isset( $_GET['plugin_status'] ) && ! empty( $_GET['plugin_status'] ) ? wp_unslash( esc_html( $_GET['plugin_status'] ) ) : '';
-	if ( wp_autoupdates_is_plugins_auto_update_enabled() ) {
+
+	if ( wp_autoupdates_is_plugins_auto_update_enabled() && wp_autoupdates_plugin_allows_auto_update( $plugin_file ) ) {
 		if ( ! isset( $plugins[ $plugin_file ] ) ) {
 			return;
 		}
+
 		$wp_auto_update_plugins = get_site_option( 'wp_auto_update_plugins', array() );
+
 		if ( in_array( $plugin_file, $wp_auto_update_plugins, true ) ) {
 			$aria_label = esc_attr(
 				sprintf(
@@ -429,6 +434,9 @@ function wp_autoupdates_plugins_bulk_actions_handle( $redirect_to, $doaction, $i
 			return $redirect_to;
 		}
 
+		// Filter can be used to remove plugins from being enabled via bulk action.
+		$plugins = apply_filters( 'wp_plugin_bulk_enabled_autoupdate', $plugins );
+
 		$previous_autoupdated_plugins = get_site_option( 'wp_auto_update_plugins', array() );
 
 		$new_autoupdated_plugins = array_merge( $previous_autoupdated_plugins, $plugins );
@@ -460,6 +468,9 @@ function wp_autoupdates_plugins_bulk_actions_handle( $redirect_to, $doaction, $i
 			$redirect_to = self_admin_url( "plugins.php?plugin_status=$status&paged=$page&s=$s" );
 			return $redirect_to;
 		}
+
+		// Filter can be used to remove plugins from being disabled via bulk action.
+		$plugins = apply_filters( 'wp_plugin_bulk_disabled_autoupdate', $plugins );
 
 		$previous_autoupdated_plugins = get_site_option( 'wp_auto_update_plugins', array() );
 
@@ -544,6 +555,16 @@ function wp_autoupdates_notices() {
 	}	
 }
 add_action( 'admin_notices', 'wp_autoupdates_notices' );
+
+/**
+ * Allows a plugin to decide if auto updates is an option for user to enable.
+ *
+ * @param  string $plugin_file
+ * @return bool   Returns true or false if auto-updates are allowed.
+ */
+function wp_autoupdates_plugin_allows_auto_update( $plugin_file ) {
+	return apply_filters( 'wp_plugin_allows_auto_update', true, $plugin_file );
+}
 
 /**
  * Add views for auto-update enabled/disabled.

@@ -70,6 +70,7 @@ Thanks to everyone who contributed to this feature plugin!
 - [@passionate](https://profiles.wordpress.org/passionate/)
 - [@nicolaskulka](https://profiles.wordpress.org/nicolaskulka/)
 - [@bookdude13](https://profiles.wordpress.org/bookdude13/)
+- [@sebd86](https://profiles.wordpress.org/sebd86/)
 
 ## Documentation 📚
 
